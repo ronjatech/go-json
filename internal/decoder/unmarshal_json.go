@@ -86,9 +86,19 @@ func (d *unmarshalJSONDecoder) Decode(ctx *RuntimeContext, cursor, depth int64, 
 		ptr: p,
 	}))
 	if (ctx.Option.Flags & ContextOption) != 0 {
-		if err := v.(unmarshalerContext).UnmarshalJSON(ctx.Option.Context, dst); err != nil {
-			d.annotateError(cursor, err)
-			return 0, err
+		// Support fallback to non-context unmarshal.
+		// This is the only reason we forked this whole thing..
+		switch v := v.(type) {
+		case unmarshalerContext:
+			if err := v.UnmarshalJSON(ctx.Option.Context, dst); err != nil {
+				d.annotateError(cursor, err)
+				return 0, err
+			}
+		case json.Unmarshaler:
+			if err := v.UnmarshalJSON(dst); err != nil {
+				d.annotateError(cursor, err)
+				return 0, err
+			}
 		}
 	} else {
 		if err := v.(json.Unmarshaler).UnmarshalJSON(dst); err != nil {
