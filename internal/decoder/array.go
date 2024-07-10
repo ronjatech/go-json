@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/goccy/go-json/internal/errors"
-	"github.com/goccy/go-json/internal/runtime"
+	"github.com/ronjatech/go-json/internal/errors"
+	"github.com/ronjatech/go-json/internal/runtime"
 )
 
 type arrayDecoder struct {
